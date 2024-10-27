@@ -13,6 +13,7 @@ pygame.display.set_caption("Yuan Shooter")
 
 # 색상 정의
 WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
@@ -258,10 +259,11 @@ def game_loop():
 
 # 시작 화면
 def start_screen():
-    font = pygame.font.Font(None, 74)
-    text = font.render("Yuan Shooter", True, WHITE)
+    font = pygame.font.Font(None, 150)
+    text = font.render("Yuan Shooter", True, BLUE)
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
 
+    font = pygame.font.Font(None, 60)
     blinking_text = font.render("press space key to play", True, WHITE)
     blinking_text_rect = blinking_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
 
