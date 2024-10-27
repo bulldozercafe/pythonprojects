@@ -28,6 +28,14 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 explosion_image = pygame.image.load("sprites.png")  # 폭발 애니메이션 이미지
 enemy_image = pygame.image.load("ufo_idle.png").convert_alpha()
 enemy_ufo_image = pygame.image.load("ufo_game_enemy.png").convert_alpha()
+background_sky_image = pygame.image.load("apt_sky.png").convert_alpha()
+background_building_image = pygame.image.load("apt_building.png").convert_alpha()
+intro_image = pygame.image.load("intro.png").convert_alpha()
+
+# 배경 위치 초기화
+sky_x = 0
+building_x = 0
+building_speed = 0.5  # 건물 배경 이동 속도
 
 # 스프라이트 시트와 캐릭터 애니메이션 설정
 sprite_sheet = pygame.image.load("sprites.png").convert_alpha()
@@ -72,11 +80,14 @@ class Player(pygame.sprite.Sprite):
             face_center_x = x + w // 2
             screen_center_x = frame.shape[1] // 2
 
+            global building_x  # 전역 변수 building_x에 접근
             # 얼굴 위치가 화면 중앙을 기준으로 좌우로 얼마나 이동했는지 확인
             if face_center_x < screen_center_x - self.center_threshold:
                 self.rect.x -= self.character_speed  # 왼쪽 이동
+                building_x += building_speed
             elif face_center_x > screen_center_x + self.center_threshold:
                 self.rect.x += self.character_speed  # 오른쪽 이동
+                building_x -= building_speed
 
             # 캐릭터가 화면을 벗어나지 않도록 제한
             if self.rect.x < 0:
@@ -228,6 +239,10 @@ def game_loop():
                     bullet.kill()
 
             screen.fill((0, 0, 0))
+            screen.blit(background_sky_image, (sky_x, 0))  # 하늘 배경 고정
+            screen.blit(background_building_image, (building_x, 0))  # 건물 배경 이동
+            screen.blit(background_building_image, (building_x + background_building_image.get_width(), 0))  # 건물 이미지 무한 반복
+
             all_sprites.draw(screen)
             pygame.display.flip()
             clock.tick(60)
@@ -262,6 +277,7 @@ def start_screen():
                 game_loop()
 
         screen.fill((0, 0, 0))
+        screen.blit(pygame.transform.scale(intro_image, (WIDTH, HEIGHT)), (0,0))
         screen.blit(text, text_rect)
 
         if blinking:
