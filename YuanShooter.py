@@ -26,6 +26,8 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 
 # 이미지 로드
 explosion_image = pygame.image.load("sprites.png")  # 폭발 애니메이션 이미지
+enemy_image = pygame.image.load("ufo_idle.png").convert_alpha()
+enemy_ufo_image = pygame.image.load("ufo_game_enemy.png").convert_alpha()
 
 # 스프라이트 시트와 캐릭터 애니메이션 설정
 sprite_sheet = pygame.image.load("sprites.png").convert_alpha()
@@ -106,8 +108,16 @@ class Player(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((50, 50))  # 적 이미지를 단순하게 사각형으로 설정
-        self.image.fill(RED)
+
+        '''
+        self.current_frame = 0        
+        self.ani_frames = 4
+        self.width = 32
+        self.height = 19
+        self.image = pygame.Surface((self.width, self.height))  # 적 이미지를 단순하게 사각형으로 설정
+        '''
+
+        self.image = pygame.transform.scale(enemy_ufo_image, (50, 50))
         self.rect = self.image.get_rect(center=(random.randint(50, WIDTH - 50), random.randint(-100, -40)))
         self.BALL_SPEED_X = 5
         self.BALL_RADIUS = 20
@@ -117,6 +127,14 @@ class Enemy(pygame.sprite.Sprite):
         self.ball_speed_y = 0  # 초기 Y 속도는 0으로 설정
 
     def update(self):
+
+        '''
+        frame_rect = pygame.Rect((self.current_frame % self.ani_frames) * self.width, 0, self.width, self.height)
+        self.image = enemy_image.subsurface(frame_rect)
+        self.current_frame += 1
+        '''
+
+
         # 중력 적용
         self.ball_speed_y += GRAVITY
         self.rect.x += self.ball_speed_x
