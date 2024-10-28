@@ -27,7 +27,6 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 
 # 이미지 로드
 explosion_image = pygame.image.load("explosion.png")  # 폭발 애니메이션 이미지
-enemy_image = pygame.image.load("ufo_idle.png").convert_alpha()
 enemy_ufo_image = pygame.image.load("ufo_game_enemy.png").convert_alpha()
 background_sky_image = pygame.image.load("apt_sky.png").convert_alpha()
 background_building_image = pygame.image.load("apt_building.png").convert_alpha()
@@ -51,11 +50,12 @@ sky_x = -((background_sky_image.get_width() - WIDTH) / 2)
 building_x = -((background_building_image.get_width() - WIDTH) / 2)
 building_speed = 0.5  # 건물 배경 이동 속도
 
-# 스프라이트 시트와 캐릭터 애니메이션 설정
-sprite_sheet = pygame.image.load("sprites.png").convert_alpha()
-sprite_width, sprite_height = 90, 120  # 각 프레임의 크기
+enemy_id = 0
 
-
+def GetEnemyId():
+    global enemy_id
+    enemy_id += 1
+    return enemy_id
 
 
 # 플레이어 클래스
@@ -65,7 +65,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((100, 100))  # 플레이어 이미지를 단순하게 사각형으로 설정
         self.rect = self.image.get_rect(center=(WIDTH // 2, HEIGHT - 50))
         self.lives = 5
-        self.character_speed = 5
+        self.character_speed = 15
 
         # 중립 위치 설정
         self.center_threshold = 50  # 얼굴이 중앙에서 벗어났을 때 이동하도록 설정하는 임계값
@@ -135,15 +135,7 @@ class Player(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-
-        '''
-        self.current_frame = 0        
-        self.ani_frames = 4
-        self.width = 32
-        self.height = 19
-        self.image = pygame.Surface((self.width, self.height))  # 적 이미지를 단순하게 사각형으로 설정
-        '''
-
+        self.id = GetEnemyId()
         self.image = pygame.transform.scale(enemy_ufo_image, (100, 100))
         self.rect = self.image.get_rect(center=(random.randint(50, WIDTH - 50), random.randint(-100, -40)))
         self.BALL_SPEED_X = 5
@@ -156,23 +148,16 @@ class Enemy(pygame.sprite.Sprite):
         # 폭발 애니메이션 관련 속성
         self.is_exploding = False
         self.explosion_frame = 0
-        self.explosion_speed = 0.2  # 폭발 애니메이션 속도
+        self.explosion_speed = 1  # 폭발 애니메이션 속도
 
     def update(self):
-
-        '''
-        frame_rect = pygame.Rect((self.current_frame % self.ani_frames) * self.width, 0, self.width, self.height)
-        self.image = enemy_image.subsurface(frame_rect)
-        self.current_frame += 1
-        '''
-
         if self.is_exploding:
             # 폭발 애니메이션 중일 때 해당 프레임 업데이트
             if self.explosion_frame < len(explosion_frames):
                 self.image = explosion_frames[int(self.explosion_frame)]
                 self.explosion_frame += self.explosion_speed
             else:
-                self.kill()  # 폭발 애니메이션이 끝나면 제거
+                super().kill() # 폭발 애니메이션이 끝나면 제거
         else:
             # 일반 상태에서 적이 할 행동 (예: 움직임)
             # 중력 적용
@@ -190,18 +175,14 @@ class Enemy(pygame.sprite.Sprite):
                 self.ball_speed_y *= BOUNCE  # 반동
 
             if self.rect.top > HEIGHT:
-                self.kill()  # 화면 밖으로 나가면 제거
-
-    def hit(self):
-        # 총알에 맞으면 폭발 시작
-        self.is_exploding = True
-        self.explosion_frame = 0
-
+                super().kill()  # 화면 밖으로 나가면 제거
 
     def kill(self):
         # 추가 작업 실행 (예: 사운드 재생, 점수 추가)
-        print("Enemy has been destroyed!")
-
+        print(f"{self.id} Enemy has been destroyed!")
+        if (self.is_exploding == False):
+            self.is_exploding = True  # 총알에 맞으면 폭발 시작
+            self.explosion_frame = 0
 
     # 총알 클래스
 class Bullet(pygame.sprite.Sprite):
@@ -214,7 +195,7 @@ class Bullet(pygame.sprite.Sprite):
     def update(self):
         self.rect.y -= 10  # 총알이 위로 이동
         if self.rect.bottom < 0:
-            self.kill()  # 화면 밖으로 나가면 제거
+            super().kill()  # 화면 밖으로 나가면 제거
 
 
 # 게임 루프
@@ -270,15 +251,8 @@ def game_loop():
                 hit_enemies = pygame.sprite.spritecollide(bullet, enemies, True)
                 for enemy in hit_enemies:
                     score += 1
-                    enemy.hit()
-                    '''
-                    explosion = pygame.sprite.Sprite()
-                    explosion.image = explosion_image
-                    explosion.rect = explosion.image.get_rect(center=enemy.rect.center)
-                    all_sprites.add(explosion)
-                    # 효과음 발생 (코드 추가 필요)
-                    bullet.kill()
-                    '''
+                    enemy.kill()
+                    enemies.remove(enemy)
 
             # 게임 배경 화면 표시
             screen.fill((0, 0, 0))
