@@ -118,6 +118,7 @@ class Player(pygame.sprite.Sprite):
 
             # 얼굴 이미지를 -90도 회전
             face_roi = cv2.rotate(face_roi, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            face_roi = cv2.flip(face_roi, 0)
             face_image_surface = pygame.surfarray.make_surface(face_roi)  # pygame Surface로 변환
 
             # 얼굴 영역 그리기 (OpenCV 창에서 확인용)
