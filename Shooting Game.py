@@ -42,7 +42,7 @@ player_image = pygame.transform.scale(player_image, (50, 50)) # 크기 조정
 
 def enemies_list(enemies, frame):
         x = random.randint(1,2)
-        if frame % 10 == 0:
+        if frame % 100 == 0:
             if x==1:
                 x_pos = 0   # -->
                 x_vel = random.randint(1,5)
@@ -55,13 +55,18 @@ def enemies_list(enemies, frame):
 
 
 def gunshots(x_pos, y_pos, bullet, frame):
-    if frame % 100 == 0:
+    if frame % 20 == 0:
             bullet.append([x_pos + 20, y_pos])    # [x_pos, y_pos]
 
 
 
 
 while play:
+    # 키보드나 마우스를 눌렀는지 확인 (무조건 맨처음 있어야 함)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:  
+            play = False
+
     # ==============   게임오버 화면 표시 ==============================
     if game_over == True:
         # 게임 오버 화면 표시
@@ -69,31 +74,35 @@ while play:
         small_font = pygame.font.Font(None, 36)
         game_over_text = font.render("Game Over", True, (255, 0, 0))
         score_text = small_font.render(f"Score: {score}", True, (255, 255, 255))
+        click_text = small_font.render("Click to start!!", True, (255, 255, 255))
         
         # 텍스트 위치 설정
         game_over_rect = game_over_text.get_rect(center=(450, 250))
         score_rect = score_text.get_rect(center=(450, 350))
+        click_rect = click_text.get_rect(center=(450, 600))
         
         # 텍스트 그리기
         background.blit(game_over_text, game_over_rect)
         background.blit(score_text, score_rect)
+        background.blit(click_text, click_rect)
         
         # 화면 업데이트
         pygame.display.flip()
         
-        # 잠시 대기 후 게임 종료
-        pygame.time.delay(5000)
-        game_over = False
-        player_health = 2
-        enemies.clear()
-        bullet.clear()
-        continue
+        if event.type == pygame.MOUSEBUTTONUP:
+            # 마우스를 클릭하면 1초 후에 게임 시작
+            pygame.time.delay(1000)
+            game_over = False
+            player_health = 2
+            enemies.clear()
+            bullet.clear()            
+        else:
+            continue
+            
     # =============================================================================
 
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:  
-            play = False
+    
 
     # 키로 동작
     '''
