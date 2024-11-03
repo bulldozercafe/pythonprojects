@@ -25,6 +25,11 @@ second = 0
 
 gravity = 0.5
 
+# ===================플레이어 체력, 점수=====================
+player_health = 5
+score = 0
+# ======================================================
+
 
 def enemies_list(enemies, frame):
         x = random.randint(1,2)
@@ -142,13 +147,12 @@ while play:
             bullet_rect = pygame.Rect(b[0], b[1], 10, 20)     # 총알 사각형 데이터 만들기
 
             # 충돌 확인
-            if bullet_rect.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 둘다 삭제
-                pygame.draw.rect(background, ('green'), bullet_rect, 5) #반짝 효과
-                pygame.draw.rect(background, ('green'), enemy_rect, 5)  #반짝 효과
+            if bullet_rect.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 처리                
                 bullet.remove(b)
                 e[4] -= 1  # 적 체력 1 깎기
                 if(e[4] < 1): # 적 체력이 1보다 작으면 삭제하기
                     enemies.remove(e)
+                    score += 1    # 적이 죽으면 점수 + 1
     # =================================================================
 
     # ===========적이랑 플레이어랑 만났는지 확인하기  ================
@@ -158,10 +162,19 @@ while play:
         
         # 충돌 확인
         if player_rect.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 처리
-            pygame.draw.rect(background, ('green'), enemy_rect, 5)  #반짝효과
-            pygame.draw.rect(background, ('green'), player_rect, 5)  #반짝효과
             print("으악!!")
+            player_health -= 1  # (문제점) 1프레임마다 계속 깎여서 한방에 많이 깎임. 충돌하면 일정시간 동안 무적으로 처리해주어야함
     # =================================================================
+
+    # ========================== 점수, 플레이어 체력 표시하기 ====================
+    font = pygame.font.Font(None, 60)  # 기본 폰트 사용, 크기 36
+    
+    score_text = font.render('Score : ' + str(score), True, (255, 255, 255))  # 흰색 글씨
+    background.blit(score_text, (0, 0, 100, 100))
+
+    health_text = font.render('Health : ' + str(player_health), True, (255, 255, 255))  # 흰색 글씨
+    background.blit(health_text, (650, 0, 100, 100))
+    # ================================================================
             
 
     
