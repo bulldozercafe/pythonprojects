@@ -12,6 +12,7 @@ y_pos = 870
 to_x = 0
 to_y = 0
 
+
 right = False
 left = False
 
