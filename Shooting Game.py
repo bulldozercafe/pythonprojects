@@ -31,17 +31,24 @@ score = 0
 coll_frame = 0
 # ======================================================
 
+# ===================== 그림 불러오기 ===================
+enemy_image = pygame.image.load("ufo_game_enemy.png").convert_alpha() # 그림 불러오기
+enemy_image = pygame.transform.scale(enemy_image, (50, 50)) # 크기 조정
+player_image = pygame.image.load("spaceship1.png").convert_alpha() # 그림 불러오기
+player_image = pygame.transform.scale(player_image, (50, 50)) # 크기 조정
+# ======================================================
+
 
 def enemies_list(enemies, frame):
         x = random.randint(1,2)
-        if frame % 1 == 0:
+        if frame % 10 == 0:
             if x==1:
                 x_pos = 0   # -->
-                x_vel = 5
+                x_vel = random.randint(1,5)
                 y_vel = 0
             else:
                 x_pos = 850 # <--                                   0      1      2      3       4
-                x_vel = -10
+                x_vel = -random.randint(1,5)
                 y_vel = 0
             enemies.append([x_pos, 200, x_vel,y_vel , 3])    # [x_pos, y_pos, x_vel, y_vel,  health]
 
@@ -110,7 +117,8 @@ while play:
 
 
     # 플레이어 그리기
-    pygame.draw.rect(background, ('white'), (x_pos, y_pos, 50, 50))
+    # pygame.draw.rect(background, ('white'), (x_pos, y_pos, 50, 50))
+    background.blit(player_image, (x_pos, y_pos, 50, 50))  # 그림으로 그리기
 
 
     # 적 새로 만들기
@@ -133,7 +141,8 @@ while play:
         # Y위치 변경
         en[1] += en[3]
 
-        pygame.draw.rect(background, ('red'), (en[0], en[1], 50, 50))
+        # pygame.draw.rect(background, ('red'), (en[0], en[1], 50, 50)) # 사각형으로 그리기
+        background.blit(enemy_image, (en[0], en[1], 50, 50))  # 그림으로 그리기
 
         # 폰트 설정 (폰트 이름, 크기)
         font = pygame.font.Font(None, 36)  # 기본 폰트 사용, 크기 36
@@ -153,7 +162,7 @@ while play:
 
             # 충돌 확인
             if bullet_rect.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 처리                                
-                # bullet.remove(b)
+                bullet.remove(b)
                 pygame.draw.rect(background, ('yellow'), (e[0], e[1], 50, 50), 5) # 번쩍 효과
                 e[4] -= 1  # 적 체력 1 깎기
                 if(e[4] < 1): # 적 체력이 1보다 작으면 삭제하기
