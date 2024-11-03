@@ -33,11 +33,24 @@ game_over = False
 # ======================================================
 
 # ===================== 그림 불러오기 ===================
-enemy_image = pygame.image.load("ufo_game_enemy.png").convert_alpha() # 그림 불러오기
+enemy_image = pygame.image.load("ufo2.png").convert_alpha() # 그림 불러오기
 enemy_image = pygame.transform.scale(enemy_image, (50, 50)) # 크기 조정
-player_image = pygame.image.load("spaceship1.png").convert_alpha() # 그림 불러오기
+player_image = pygame.image.load("spaceship3.png").convert_alpha() # 그림 불러오기
 player_image = pygame.transform.scale(player_image, (50, 50)) # 크기 조정
+background_image = pygame.image.load("ocean.png").convert_alpha() # 그림 불러오기
+background_image = pygame.transform.scale(background_image, (900, 950)) # 크기 조정
 # ======================================================
+
+# ==================== 음악 불러오기 =======================
+# 배경 음악 로드 및 재생
+pygame.mixer.music.load("Electroman Adventures.mp3")  # MP3 파일 경로
+pygame.mixer.music.play(-1)  # -1은 무한 반복을 의미합니다.
+
+# 효과음 로드
+boom_sound = pygame.mixer.Sound("boom.mp3")  # WAV 파일 경로
+bullet_sound = pygame.mixer.Sound("lazer.mp3")  # WAV 파일 경로
+bullet_sound.set_volume(0.2) # 30% 볼륨으로 재생
+# ===========================================================
 
 
 def enemies_list(enemies, frame):
@@ -57,6 +70,7 @@ def enemies_list(enemies, frame):
 def gunshots(x_pos, y_pos, bullet, frame):
     if frame % 20 == 0:
             bullet.append([x_pos + 20, y_pos])    # [x_pos, y_pos]
+            bullet_sound.play()
 
 
 
@@ -70,6 +84,7 @@ while play:
     # ==============   게임오버 화면 표시 ==============================
     if game_over == True:
         # 게임 오버 화면 표시
+        pygame.mixer.music.stop()
         background.fill((0, 0, 0))  # 검정색 배경
         small_font = pygame.font.Font(None, 36)
         game_over_text = font.render("Game Over", True, (255, 0, 0))
@@ -95,7 +110,8 @@ while play:
             game_over = False
             player_health = 2
             enemies.clear()
-            bullet.clear()            
+            bullet.clear()  
+            pygame.mixer.music.play(-1)          
         else:
             continue
             
@@ -142,7 +158,8 @@ while play:
 
 
     # 화면에 그리기 시작
-    background.fill('blue')
+    # background.fill('blue')
+    background.blit(background_image, (0, 0))
 
 
     # 총알 생성
@@ -211,6 +228,7 @@ while play:
                     if e in enemies:
                         enemies.remove(e)
                         score += 1    # 적이 죽으면 점수 + 1
+                        boom_sound.play()
 
     player_rect = pygame.Rect(x_pos, y_pos, 50, 50)
     for e in enemies:
