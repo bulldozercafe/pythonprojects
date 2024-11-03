@@ -26,9 +26,10 @@ second = 0
 gravity = 0.5
 
 # ===================플레이어 체력, 점수=================
-player_health = 5
+player_health = 2
 score = 0
 coll_frame = 0
+game_over = False
 # ======================================================
 
 # ===================== 그림 불러오기 ===================
@@ -54,13 +55,41 @@ def enemies_list(enemies, frame):
 
 
 def gunshots(x_pos, y_pos, bullet, frame):
-    if frame % 1 == 0:
+    if frame % 100 == 0:
             bullet.append([x_pos + 20, y_pos])    # [x_pos, y_pos]
 
 
 
 
 while play:
+    # ==============   게임오버 화면 표시 ==============================
+    if game_over == True:
+        # 게임 오버 화면 표시
+        background.fill((0, 0, 0))  # 검정색 배경
+        small_font = pygame.font.Font(None, 36)
+        game_over_text = font.render("Game Over", True, (255, 0, 0))
+        score_text = small_font.render(f"Score: {score}", True, (255, 255, 255))
+        
+        # 텍스트 위치 설정
+        game_over_rect = game_over_text.get_rect(center=(450, 250))
+        score_rect = score_text.get_rect(center=(450, 350))
+        
+        # 텍스트 그리기
+        background.blit(game_over_text, game_over_rect)
+        background.blit(score_text, score_rect)
+        
+        # 화면 업데이트
+        pygame.display.flip()
+        
+        # 잠시 대기 후 게임 종료
+        pygame.time.delay(5000)
+        game_over = False
+        player_health = 2
+        enemies.clear()
+        bullet.clear()
+        continue
+    # =============================================================================
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  
@@ -116,9 +145,11 @@ while play:
         pygame.draw.rect(background, ('yellow'), (gun[0], gun[1], 10, 20))
 
 
-    # 플레이어 그리기
+    # =======================================================================
+    # 플레이어 그리기    
     # pygame.draw.rect(background, ('white'), (x_pos, y_pos, 50, 50))
     background.blit(player_image, (x_pos, y_pos, 50, 50))  # 그림으로 그리기
+    # =======================================================================
 
 
     # 적 새로 만들기
@@ -141,8 +172,10 @@ while play:
         # Y위치 변경
         en[1] += en[3]
 
+        # =======================================================================
         # pygame.draw.rect(background, ('red'), (en[0], en[1], 50, 50)) # 사각형으로 그리기
         background.blit(enemy_image, (en[0], en[1], 50, 50))  # 그림으로 그리기
+        # =======================================================================
 
         # 폰트 설정 (폰트 이름, 크기)
         font = pygame.font.Font(None, 36)  # 기본 폰트 사용, 크기 36
@@ -182,6 +215,8 @@ while play:
                 pygame.draw.rect(background, ('yellow'), (x_pos, y_pos, 50, 50), 10) # 번쩍 효과
                 coll_frame = frame
                 player_health -= 1
+                if player_health < 1:
+                    game_over = True
 
 
 
