@@ -25,18 +25,19 @@ second = 0
 
 gravity = 0.5
 
-# ===================플레이어 체력, 점수=====================
+# ===================플레이어 체력, 점수=================
 player_health = 5
 score = 0
+coll_frame = 0
 # ======================================================
 
 
 def enemies_list(enemies, frame):
         x = random.randint(1,2)
-        if frame % 600 == 0:
+        if frame % 1 == 0:
             if x==1:
                 x_pos = 0   # -->
-                x_vel = 10
+                x_vel = 5
                 y_vel = 0
             else:
                 x_pos = 850 # <--                                   0      1      2      3       4
@@ -46,7 +47,7 @@ def enemies_list(enemies, frame):
 
 
 def gunshots(x_pos, y_pos, bullet, frame):
-    if frame % 20 == 0:
+    if frame % 1 == 0:
             bullet.append([x_pos + 20, y_pos])    # [x_pos, y_pos]
 
 
@@ -59,6 +60,7 @@ while play:
             play = False
 
     # 키로 동작
+    '''
     if event.type == pygame.KEYDOWN:  
         if event.key in (pygame.K_RIGHT, pygame.K_d):
             left = False
@@ -79,13 +81,15 @@ while play:
         x_pos = 0
     elif x_pos > 850:  # 오른쪽 경계 (900 - 50)
         x_pos = 850
-
-
+    '''
 
 
     # ===============마우스 위치 가져오기 ================
     mouse_x, mouse_y = pygame.mouse.get_pos()
-    x_pos = mouse_x
+    if mouse_x > 850:
+        mouse_x = 850
+
+    x_pos = mouse_x # 마우스 위치로 플레이어 이동
     # ===================================================
 
     
@@ -131,50 +135,54 @@ while play:
 
         pygame.draw.rect(background, ('red'), (en[0], en[1], 50, 50))
 
-        # ========================== 적 체력 표시하기 ====================
         # 폰트 설정 (폰트 이름, 크기)
         font = pygame.font.Font(None, 36)  # 기본 폰트 사용, 크기 36
         text = font.render(str(en[4]), True, (255, 255, 255))  # 흰색 글씨
         background.blit(text, (en[0], en[1], 50, 50))
-        # ================================================================
-
     
 
-    # ===========적이랑 총알이 만났는지 확인하고 삭제하기================
+    # BULLET================================================================================
     for e in enemies:
         for b in bullet:
+            if b[1] < -50:
+                bullet.remove(b)
+                continue
+
             enemy_rect = pygame.Rect(e[0], e[1], 50, 50)  # 적 사각형 데이터 만들기
             bullet_rect = pygame.Rect(b[0], b[1], 10, 20)     # 총알 사각형 데이터 만들기
 
             # 충돌 확인
-            if bullet_rect.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 처리                
-                bullet.remove(b)
+            if bullet_rect.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 처리                                
+                # bullet.remove(b)
+                pygame.draw.rect(background, ('yellow'), (e[0], e[1], 50, 50), 5) # 번쩍 효과
                 e[4] -= 1  # 적 체력 1 깎기
                 if(e[4] < 1): # 적 체력이 1보다 작으면 삭제하기
-                    enemies.remove(e)
-                    score += 1    # 적이 죽으면 점수 + 1
-    # =================================================================
+                    if e in enemies:
+                        enemies.remove(e)
+                        score += 1    # 적이 죽으면 점수 + 1
 
-    # ===========적이랑 플레이어랑 만났는지 확인하기  ================
     player_rect = pygame.Rect(x_pos, y_pos, 50, 50)
     for e in enemies:
         enemy_rect = pygame.Rect(e[0], e[1], 50, 50)  # 적 사각형 데이터 만들기
         
-        # 충돌 확인
-        if player_rect.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 처리
-            print("으악!!")
-            player_health -= 1  # (문제점) 1프레임마다 계속 깎여서 한방에 많이 깎임. 충돌하면 일정시간 동안 무적으로 처리해주어야함
-    # =================================================================
 
-    # ========================== 점수, 플레이어 체력 표시하기 ====================
+        # PLAYER============================================================================
+        # 충돌 확인
+        if frame > coll_frame + 100: 
+            if player_rect.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 처리
+                pygame.draw.rect(background, ('yellow'), (x_pos, y_pos, 50, 50), 10) # 번쩍 효과
+                coll_frame = frame
+                player_health -= 1
+
+
+
     font = pygame.font.Font(None, 60)  # 기본 폰트 사용, 크기 36
     
     score_text = font.render('Score : ' + str(score), True, (255, 255, 255))  # 흰색 글씨
-    background.blit(score_text, (0, 0, 100, 100))
+    background.blit(score_text, (0, 0, 100, 100)) # 화면에 그리기
 
     health_text = font.render('Health : ' + str(player_health), True, (255, 255, 255))  # 흰색 글씨
-    background.blit(health_text, (650, 0, 100, 100))
-    # ================================================================
+    background.blit(health_text, (650, 0, 100, 100)) # 화면에 그리기
             
 
     
