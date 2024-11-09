@@ -27,7 +27,8 @@ second = 0
 gravity = 0.5
 
 # ===================플레이어 체력, 점수=================
-player_health = 2
+PLAYER_H = 5
+player_health = PLAYER_H
 score = 0
 coll_frame = 0
 game_over = False
@@ -119,7 +120,7 @@ while play:
             # 마우스를 클릭하면 1초 후에 게임 시작
             pygame.time.delay(1000)
             game_over = False
-            player_health = 2
+            player_health = PLAYER_H
             enemies.clear()
             bullet.clear()  
             playMusic()
