@@ -43,15 +43,25 @@ background_image = pygame.transform.scale(background_image, (900, 950)) # 크기
 # ======================================================
 
 # ==================== 음악 불러오기 =======================
-# 배경 음악 로드 및 재생
-pygame.mixer.music.load("Electroman Adventures.mp3")  # MP3 파일 경로
-pygame.mixer.music.play(-1)  # -1은 무한 반복을 의미합니다.
+
 
 # 효과음 로드
 boom_sound = pygame.mixer.Sound("boom.mp3")  # WAV 파일 경로
 bullet_sound = pygame.mixer.Sound("lazer.mp3")  # WAV 파일 경로
 bullet_sound.set_volume(0.2) # 30% 볼륨으로 재생
 # ===========================================================
+
+
+def playMusic():
+    music_list = []
+    # 배경 음악 로드 및 재생
+    music_list.append("Electroman Adventures.mp3")
+    music_list.append("Theory of Everything (GD Cut).mp3")
+    
+    pygame.mixer.music.load(music_list[random.randint(0,len(music_list) - 1)])  # MP3 파일 경로
+    pygame.mixer.music.play(-1)  # -1은 무한 반복을 의미합니다.
+
+
 
 
 def enemies_list(enemies, frame):
@@ -74,7 +84,7 @@ def gunshots(x_pos, y_pos, bullet, frame):
             bullet_sound.play()
 
 
-
+playMusic()
 
 while play:
     # 키보드나 마우스를 눌렀는지 확인 (무조건 맨처음 있어야 함)
@@ -102,8 +112,8 @@ while play:
         background.blit(score_text, score_rect)
         background.blit(click_text, click_rect)
         
-        # 화면 업데이트
-        pygame.display.flip()
+        # 게임오버 화면 업데이트
+        pygame.display.update()
         
         if event.type == pygame.MOUSEBUTTONUP:
             # 마우스를 클릭하면 1초 후에 게임 시작
@@ -112,7 +122,7 @@ while play:
             player_health = 2
             enemies.clear()
             bullet.clear()  
-            pygame.mixer.music.play(-1)          
+            playMusic()
         else:
             continue
             
