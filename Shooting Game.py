@@ -25,6 +25,7 @@ frame = 0
 second = 0
 
 gravity = 0.5
+BONUS_SCORE = 30
 
 # ===================플레이어 체력, 점수=================
 PLAYER_H = 5
@@ -48,7 +49,8 @@ background_image = pygame.transform.scale(background_image, (900, 950)) # 크기
 boom_sound = pygame.mixer.Sound("boom.mp3")  # WAV 파일 경로
 bullet_sound = pygame.mixer.Sound("lazer.mp3")  # WAV 파일 경로
 laser_sound = pygame.mixer.Sound("LASER_LONG.mp3")  # WAV 파일 경로
-bullet_sound.set_volume(0.2) # 30% 볼륨으로 재생
+bonus_sound = pygame.mixer.Sound("bonus.mp3")  # WAV 파일 경로
+bullet_sound.set_volume(0.3) # 30% 볼륨으로 재생
 # ===========================================================
 
 
@@ -57,8 +59,10 @@ def playMusic():
     # 배경 음악 로드 및 재생
     music_list.append("Electroman Adventures.mp3")
     music_list.append("Theory of Everything (GD Cut).mp3")
+    music_list.append("Clubstep (GD Cut).mp3")
     
     pygame.mixer.music.load(music_list[random.randint(0,len(music_list) - 1)])  # MP3 파일 경로
+    pygame.mixer.music.set_volume(0.7)    
     pygame.mixer.music.play(-1)  # -1은 무한 반복을 의미합니다.
 
 
@@ -105,7 +109,8 @@ while play:
     # ==============   게임오버 화면 표시 ==============================
     if game_over == True:
         # 게임 오버 화면 표시
-        pygame.mixer.music.stop()
+        #pygame.mixer.music.stop()
+        pygame.mixer.music.set_volume(0.1)    
         background.fill((0, 0, 0))  # 검정색 배경
         small_font = pygame.font.Font(None, 36)
         game_over_text = font.render("Game Over", True, (255, 0, 0))
@@ -128,6 +133,7 @@ while play:
         if event.type == pygame.MOUSEBUTTONUP:
             # 마우스를 클릭하면 1초 후에 게임 시작
             pygame.time.delay(1000)
+            score = 0
             game_over = False
             player_health = PLAYER_H
             enemies.clear()
@@ -137,6 +143,8 @@ while play:
             continue
             
     # =============================================================================
+
+    
 
 
     
@@ -252,6 +260,9 @@ while play:
                     if e in enemies:
                         enemies.remove(e)
                         score += 1    # 적이 죽으면 점수 + 1
+                        if score % BONUS_SCORE == 0:
+                            player_health += 1
+                            bonus_sound.play()
                         boom_sound.play()
 
     # Laser 충돌 확인================================================================================
@@ -267,6 +278,9 @@ while play:
                     if e in enemies:
                         enemies.remove(e)
                         score += 1    # 적이 죽으면 점수 + 1
+                        if score % BONUS_SCORE == 0:
+                            player_health += 1
+                            bonus_sound.play()
                         boom_sound.play()
     
 
