@@ -66,7 +66,7 @@ def playMusic():
 
 def enemies_list(enemies, frame):
         x = random.randint(1,2)
-        if frame % 100 == 0:
+        if frame % 50 == 0:
             if x==1:
                 x_pos = 0   # -->
                 x_vel = random.randint(1,5)
@@ -85,8 +85,11 @@ def gunshots(x_pos, y_pos, bullet, frame):
 
 def laser(second, laser_sound, x_pos, y_pos):
     if second % 10 == 0:
-        pygame.draw.rect(background, ('red'), (x_pos + 18, y_pos - 1000, 10, 1000))
+        hitbox = pygame.draw.rect(background, ('red'), (x_pos + 18, y_pos - 1000, 10, 1000))
         laser_sound.play()
+        return hitbox
+    return None
+
 
          
 
@@ -189,7 +192,7 @@ while play:
         pygame.draw.rect(background, ('yellow'), (gun[0], gun[1], 10, 20))
 
     # LASER==================================================================
-    laser(second, laser_sound, x_pos, y_pos)
+    laser_hitbox = laser(second, laser_sound, x_pos, y_pos)
 
 
     # =======================================================================
@@ -230,7 +233,7 @@ while play:
         background.blit(text, (en[0], en[1], 50, 50))
     
 
-    # BULLET================================================================================
+    # BULLET 충돌 확인================================================================================
     for e in enemies:
         for b in bullet:
             if b[1] < -50:
@@ -251,18 +254,35 @@ while play:
                         score += 1    # 적이 죽으면 점수 + 1
                         boom_sound.play()
 
+    # Laser 충돌 확인================================================================================
+    if laser_hitbox != None:
+        for e in enemies:
+            enemy_rect = pygame.Rect(e[0], e[1], 50, 50)  # 적 사각형 데이터 만들기
+
+            # 충돌 확인
+            if laser_hitbox.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 처리                                
+                pygame.draw.rect(background, ('yellow'), (e[0], e[1], 50, 50), 5) # 번쩍 효과
+                e[4] -= 1  # 적 체력 1 깎기
+                if(e[4] < 1): # 적 체력이 1보다 작으면 삭제하기
+                    if e in enemies:
+                        enemies.remove(e)
+                        score += 1    # 적이 죽으면 점수 + 1
+                        boom_sound.play()
+    
+
+
+    # PLAYER 충돌 확인============================================================================
     player_rect = pygame.Rect(x_pos, y_pos, 50, 50)
     for e in enemies:
-        enemy_rect = pygame.Rect(e[0], e[1], 50, 50)  # 적 사각형 데이터 만들기
+        enemy_rect = pygame.Rect(e[0], e[1], 50, 50)  # 적 사각형 데이터 만들기        
         
-
-        # PLAYER============================================================================
         # 충돌 확인
         if frame > coll_frame + 100: 
             if player_rect.colliderect(enemy_rect):   # 서로 겹쳤는지 검사 -> 겹쳤으면 처리
                 pygame.draw.rect(background, ('yellow'), (x_pos, y_pos, 50, 50), 10) # 번쩍 효과
                 coll_frame = frame
                 player_health -= 1
+                background.fill((255, 0, 0))  # 검정색 배경
                 if player_health < 1:
                     game_over = True
 
