@@ -44,11 +44,10 @@ background_image = pygame.transform.scale(background_image, (900, 950)) # 크기
 # ======================================================
 
 # ==================== 음악 불러오기 =======================
-
-
 # 효과음 로드
 boom_sound = pygame.mixer.Sound("boom.mp3")  # WAV 파일 경로
 bullet_sound = pygame.mixer.Sound("lazer.mp3")  # WAV 파일 경로
+laser_sound = pygame.mixer.Sound("LASER_LONG.mp3")  # WAV 파일 경로
 bullet_sound.set_volume(0.2) # 30% 볼륨으로 재생
 # ===========================================================
 
@@ -84,6 +83,13 @@ def gunshots(x_pos, y_pos, bullet, frame):
             bullet.append([x_pos + 20, y_pos])    # [x_pos, y_pos]
             bullet_sound.play()
 
+def laser(second, laser_sound, x_pos, y_pos):
+    if second % 10 == 0:
+        pygame.draw.rect(background, ('red'), (x_pos + 18, y_pos - 1000, 10, 1000))
+        laser_sound.play()
+
+         
+
 
 playMusic()
 
@@ -92,7 +98,7 @@ while play:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  
             play = False
-
+        
     # ==============   게임오버 화면 표시 ==============================
     if game_over == True:
         # 게임 오버 화면 표시
@@ -181,6 +187,9 @@ while play:
     for gun in bullet:
         gun[1] -= 20
         pygame.draw.rect(background, ('yellow'), (gun[0], gun[1], 10, 20))
+
+    # LASER==================================================================
+    laser(second, laser_sound, x_pos, y_pos)
 
 
     # =======================================================================
