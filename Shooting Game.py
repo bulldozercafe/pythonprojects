@@ -27,6 +27,8 @@ second = 0
 gravity = 0.5
 BONUS_SCORE = 30
 
+item_list = []
+
 # ===================플레이어 체력, 점수=================
 PLAYER_H = 5
 player_health = PLAYER_H
@@ -50,7 +52,7 @@ boom_sound = pygame.mixer.Sound("boom.mp3")  # WAV 파일 경로
 bullet_sound = pygame.mixer.Sound("lazer.mp3")  # WAV 파일 경로
 laser_sound = pygame.mixer.Sound("LASER_LONG.mp3")  # WAV 파일 경로
 bonus_sound = pygame.mixer.Sound("bonus.mp3")  # WAV 파일 경로
-bullet_sound.set_volume(0.3) # 30% 볼륨으로 재생
+bullet_sound.set_volume(0.2) # 30% 볼륨으로 재생
 # ===========================================================
 
 
@@ -60,10 +62,18 @@ def playMusic():
     music_list.append("Electroman Adventures.mp3")
     music_list.append("Theory of Everything (GD Cut).mp3")
     music_list.append("Clubstep (GD Cut).mp3")
+    music_list.append("Electrodynamix.mp3")
+    music_list.append("Time Machine.mp3")
     
     pygame.mixer.music.load(music_list[random.randint(0,len(music_list) - 1)])  # MP3 파일 경로
     pygame.mixer.music.set_volume(0.7)    
     pygame.mixer.music.play(-1)  # -1은 무한 반복을 의미합니다.
+
+
+
+def item(score, item_list, colide_checkㅆ ㄲ ):
+    
+    
 
 
 
