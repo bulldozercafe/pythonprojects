@@ -30,6 +30,9 @@ BONUS_SCORE = 30
 item_list = []
 colide_check = False
 
+item_x = random.randint(75, 875)
+item_y = 0
+
 # ===================플레이어 체력, 점수=================
 PLAYER_H = 5
 player_health = PLAYER_H
@@ -39,11 +42,19 @@ game_over = False
 # ======================================================
 
 # ===================== 그림 불러오기 ===================
-enemy_image = pygame.image.load("ufo2.png").convert_alpha() # 그림 불러오기
+enemy_image = pygame.image.load("ufo2.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
 enemy_image = pygame.transform.scale(enemy_image, (50, 50)) # 크기 조정
-player_image = pygame.image.load("spaceship3.png").convert_alpha() # 그림 불러오기
+player_image = pygame.image.load("spaceship3.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
 player_image = pygame.transform.scale(player_image, (50, 50)) # 크기 조정
-background_image = pygame.image.load("ocean.png").convert_alpha() # 그림 불러오기
+item_red_image = pygame.image.load("redCristal.png").convert.alpha # 그림 불러오기  빠르게(convert.alpha())
+item_red_image = pygame.transform.scale(item_red_image, (50,50)) # 크기 조정
+item_green_image = pygame.image.load("greenCristal.png").convert.alpha # 그림 불러오기  빠르게(convert.alpha())
+item_green_image = pygame.transform.scale(item_green_image, (50,50)) # 크기 조정
+item_blue_image = pygame.image.load("blueCristal.png").convert.alpha # 그림 불러오기  빠르게(convert.alpha())
+item_blue_image = pygame.transform.scale(item_blue_image, (50,50)) # 크기 조정
+item_white_image = pygame.image.load("whiteCristal.png").convert.alpha # 그림 불러오기  빠르게(convert.alpha())
+item_white_image = pygame.transform.scale(item_white_image, (50,50)) # 크기 조정
+background_image = pygame.image.load("ocean.png").convert_alpha() # 그림 불러오기 빠르게(convert.alpha())
 background_image = pygame.transform.scale(background_image, (900, 950)) # 크기 조정
 # ======================================================
 
@@ -90,11 +101,11 @@ def enemies_list(enemies, frame):
         x = random.randint(1,2)
         if frame % 50 == 0:
             if x==1:
-                x_pos = 0   # -->
+                x_pos = 0   # --> 방향
                 x_vel = random.randint(1,5)
                 y_vel = 0
             else:
-                x_pos = 850 # <--                                   0      1      2      3       4
+                x_pos = 850 # <-- 방향                            0      1      2      3       4
                 x_vel = -random.randint(1,5)
                 y_vel = 0
             enemies.append([x_pos, 200, x_vel,y_vel , 3])    # [x_pos, y_pos, x_vel, y_vel,  health]
@@ -218,10 +229,18 @@ while play:
     
     #====================================================
 
-    # 아이템 생성
+    # 아이템 생성========================================
+
+    # 함수 호출
     item(score, item_list, colide_check)
 
+    
+    # list에 값이 있는지 확인
     try:
+        item_list[0]
+        # 있으면 그리기
+        background.blit(item_image, (item, , 50, 50))  # 그림으로 그리기
+        
 
     
     except IndexError:
