@@ -95,8 +95,8 @@ def itemDrop(item_list, cur_score):
         return
 
     if (cur_score != 0) and (cur_score % ITEM_SCORE == 0): 
-        last_item_score = cur_score                                                      #    0      1      2
-        item_list.append([random.randint(75, 825), 0, random.randint(0,3)])          # [x_pos, y_pos, 종류]
+        last_item_score = cur_score                                                     
+        item_list.append([random.randint(75, 825), 0, random.randint(0,3)])          # [1.x_pos, 2.y_pos, 3.아이템종류]
 
 
 def enemies_list(enemies, frame):
@@ -107,15 +107,15 @@ def enemies_list(enemies, frame):
             x_vel = random.randint(1,5)
             y_vel = 0
         else:
-            x_pos = 850 # <-- 방향                            0      1      2      3       4
+            x_pos = 850 # <-- 방향                           
             x_vel = -random.randint(1,5)
             y_vel = 0
-        enemies.append([x_pos, 200, x_vel,y_vel , 3])    # [x_pos, y_pos, x_vel, y_vel,  health]
+        enemies.append([x_pos, 200, x_vel,y_vel , 3])    # [1.x_pos, 2.y_pos, 3.x_vel, y_vel, 4.health]
 
 
 def gunshots(x_pos, y_pos, bullet, frame):
     if frame % 20 == 0:
-            bullet.append([x_pos + 20, y_pos])    # [x_pos, y_pos]
+            bullet.append([x_pos + 20, y_pos])    # [1.x_pos, 2.y_pos]
             bullet_sound.play()
 
 def laser(second, laser_sound, x_pos, y_pos):
