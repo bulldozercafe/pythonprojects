@@ -28,6 +28,7 @@ gravity = 0.5
 BONUS_SCORE = 30
 
 item_list = []
+last_item_score = 0
 colide_check = False
 
 item_x = random.randint(75, 875)
@@ -44,18 +45,22 @@ game_over = False
 # ===================== 그림 불러오기 ===================
 enemy_image = pygame.image.load("ufo2.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
 enemy_image = pygame.transform.scale(enemy_image, (50, 50)) # 크기 조정
+
 player_image = pygame.image.load("spaceship3.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
 player_image = pygame.transform.scale(player_image, (50, 50)) # 크기 조정
-item_red_image = pygame.image.load("redCristal.png").convert.alpha # 그림 불러오기  빠르게(convert.alpha())
-item_red_image = pygame.transform.scale(item_red_image, (50,50)) # 크기 조정
-item_green_image = pygame.image.load("greenCristal.png").convert.alpha # 그림 불러오기  빠르게(convert.alpha())
-item_green_image = pygame.transform.scale(item_green_image, (50,50)) # 크기 조정
-item_blue_image = pygame.image.load("blueCristal.png").convert.alpha # 그림 불러오기  빠르게(convert.alpha())
-item_blue_image = pygame.transform.scale(item_blue_image, (50,50)) # 크기 조정
-item_white_image = pygame.image.load("whiteCristal.png").convert.alpha # 그림 불러오기  빠르게(convert.alpha())
-item_white_image = pygame.transform.scale(item_white_image, (50,50)) # 크기 조정
+
 background_image = pygame.image.load("ocean.png").convert_alpha() # 그림 불러오기 빠르게(convert.alpha())
 background_image = pygame.transform.scale(background_image, (900, 950)) # 크기 조정
+
+item_red_image = pygame.image.load("redCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
+item_red_image = pygame.transform.scale(item_red_image, (50,50)) # 크기 조정
+item_green_image = pygame.image.load("greenCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
+item_green_image = pygame.transform.scale(item_green_image, (50,50)) # 크기 조정
+item_blue_image = pygame.image.load("blueCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
+item_blue_image = pygame.transform.scale(item_blue_image, (50,50)) # 크기 조정
+item_white_image = pygame.image.load("whiteCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
+item_white_image = pygame.transform.scale(item_white_image, (50,50)) # 크기 조정
+item_img_list = [item_red_image, item_green_image, item_blue_image, item_white_image]
 # ======================================================
 
 # ==================== 음악 불러오기 =======================
@@ -83,32 +88,29 @@ def playMusic():
 
 
 
-def item(score, item_list, colide_check):
-    SCORE = 0
-    while colide_check == True:
-        score = SCORE
-    if score - SCORE == 60:                                   #    0      1
-        item_list.append(random.randint(75, 825), 0)          # [x_pos, y_pos]
-        return item_list
+def itemDrop(item_list, cur_score):
+    ITEM_SCORE = 2         # 60점 마다 아이템 등장
+    global last_item_score
+    if last_item_score == cur_score:
+        return
 
-        
-    
-
-
+    if (cur_score != 0) and (cur_score % ITEM_SCORE == 0): 
+        last_item_score = cur_score                                                      #    0      1      2
+        item_list.append([random.randint(75, 825), 0, random.randint(0,3)])          # [x_pos, y_pos, 종류]
 
 
 def enemies_list(enemies, frame):
-        x = random.randint(1,2)
-        if frame % 50 == 0:
-            if x==1:
-                x_pos = 0   # --> 방향
-                x_vel = random.randint(1,5)
-                y_vel = 0
-            else:
-                x_pos = 850 # <-- 방향                            0      1      2      3       4
-                x_vel = -random.randint(1,5)
-                y_vel = 0
-            enemies.append([x_pos, 200, x_vel,y_vel , 3])    # [x_pos, y_pos, x_vel, y_vel,  health]
+    x = random.randint(1,2)
+    if frame % 50 == 0:
+        if x==1:
+            x_pos = 0   # --> 방향
+            x_vel = random.randint(1,5)
+            y_vel = 0
+        else:
+            x_pos = 850 # <-- 방향                            0      1      2      3       4
+            x_vel = -random.randint(1,5)
+            y_vel = 0
+        enemies.append([x_pos, 200, x_vel,y_vel , 3])    # [x_pos, y_pos, x_vel, y_vel,  health]
 
 
 def gunshots(x_pos, y_pos, bullet, frame):
@@ -171,6 +173,7 @@ while play:
             # 마우스를 클릭하면 1초 후에 게임 시작
             pygame.time.delay(1000)
             score = 0
+            last_item_score = 0
             game_over = False
             player_health = PLAYER_H
             enemies.clear()
@@ -230,22 +233,29 @@ while play:
     #====================================================
 
     # 아이템 생성========================================
+    itemDrop(item_list, score)
 
-    # 함수 호출
-    item(score, item_list, colide_check)
-
-    
+    '''
     # list에 값이 있는지 확인
     try:
         item_list[0]
         # 있으면 그리기
         background.blit(item_image, (item, , 50, 50))  # 그림으로 그리기
         
-
     
     except IndexError:
-    
-    
+    '''
+
+    # 아이템 그리기
+    if len(item_list) > 0:  # 아이템이 있으면 그리기
+        for item in item_list:
+            item[1] += 5        # 아이템이 천천히 내려오기
+
+            if item[1] > 1000:    # 아이템이 화면 밖으로 사라지면 지우고 다음 아이템 그리기로 바로넘어감
+                item_list.remove(item)  
+                continue
+
+            background.blit(item_img_list[item[2]], (item[0], item[1], 50, 50))  # 그림으로 그리기
 
 
 
@@ -255,6 +265,10 @@ while play:
     # 총알 그리기
     for gun in bullet:
         gun[1] -= 20
+        if gun[1] < -100:   # 총알이 화면 밖으로 사라지면 없애기            
+            bullet.remove(gun)
+            continue
+
         pygame.draw.rect(background, ('yellow'), (gun[0], gun[1], 10, 20))
 
     # LASER==================================================================
