@@ -31,8 +31,7 @@ item_list = []
 last_item_score = 0
 colide_check = False
 
-item_x = random.randint(75, 875)
-item_y = 0
+
 
 # ===================플레이어 체력, 점수=================
 PLAYER_H = 5
@@ -53,15 +52,19 @@ background_image = pygame.image.load("ocean.png").convert_alpha() # 그림 불�
 background_image = pygame.transform.scale(background_image, (900, 950)) # 크기 조정
 
 item_red_image = pygame.image.load("redCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
-item_red_image = pygame.transform.scale(item_red_image, (50,50)) # 크기 조정
+item_red_image = pygame.transform.scale(item_red_image, (50,60)) # 크기 조정
 item_green_image = pygame.image.load("greenCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
-item_green_image = pygame.transform.scale(item_green_image, (50,50)) # 크기 조정
+item_green_image = pygame.transform.scale(item_green_image, (60,50)) # 크기 조정
 item_blue_image = pygame.image.load("blueCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
-item_blue_image = pygame.transform.scale(item_blue_image, (50,50)) # 크기 조정
+item_blue_image = pygame.transform.scale(item_blue_image, (60,50)) # 크기 조정
 item_white_image = pygame.image.load("whiteCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
-item_white_image = pygame.transform.scale(item_white_image, (50,50)) # 크기 조정
+item_white_image = pygame.transform.scale(item_white_image, (60,50)) # 크기 조정
 item_img_list = [item_red_image, item_green_image, item_blue_image, item_white_image]
 # ======================================================
+
+
+item_random_list = [item_red_image, item_green_image, item_blue_image, item_white_image]
+
 
 # ==================== 음악 불러오기 =======================
 # 효과음 로드
@@ -81,22 +84,12 @@ def playMusic():
     music_list.append("Clubstep (GD Cut).mp3")
     music_list.append("Electrodynamix.mp3")
     music_list.append("Time Machine.mp3")
+    music_list.append("Hexagon Force.mp3")
     
     pygame.mixer.music.load(music_list[random.randint(0,len(music_list) - 1)])  # MP3 파일 경로
     pygame.mixer.music.set_volume(0.7)    
     pygame.mixer.music.play(-1)  # -1은 무한 반복을 의미합니다.
 
-
-
-def itemDrop(item_list, cur_score):
-    ITEM_SCORE = 2         # 60점 마다 아이템 등장
-    global last_item_score
-    if last_item_score == cur_score:
-        return
-
-    if (cur_score != 0) and (cur_score % ITEM_SCORE == 0): 
-        last_item_score = cur_score                                                     
-        item_list.append([random.randint(75, 825), 0, random.randint(0,3)])          # [1.x_pos, 2.y_pos, 3.아이템종류]
 
 
 def enemies_list(enemies, frame):
@@ -233,31 +226,25 @@ while play:
     #====================================================
 
     # 아이템 생성========================================
-    itemDrop(item_list, score)
-
     '''
     # list에 값이 있는지 확인
     try:
         item_list[0]
-        # 있으면 그리기
-        background.blit(item_image, (item, , 50, 50))  # 그림으로 그리기
+        background.blit(item_random_list[item_list[2]], (item_list[0], item_list[1]))
+        item_xpos += 5
         
-    
+        
+        
     except IndexError:
+        SCORE = 0
+        if colide_check == True or item == True:
+            SCORE = score
+        if score - SCORE == 30:                                                         #    0      1
+            item_list.append(random.randint(75, 825), 0, random.randint(0, 2))          # [x_pos, y_pos, index(item_random_list)]
+            item_ypos = 0
+            item_xpos = item_list[0]
+            item_type = item_list[2]
     '''
-
-    # 아이템 그리기
-    if len(item_list) > 0:  # 아이템이 있으면 그리기
-        for item in item_list:
-            item[1] += 5        # 아이템이 천천히 내려오기
-
-            if item[1] > 1000:    # 아이템이 화면 밖으로 사라지면 지우고 다음 아이템 그리기로 바로넘어감
-                item_list.remove(item)  
-                continue
-
-            background.blit(item_img_list[item[2]], (item[0], item[1], 50, 50))  # 그림으로 그리기
-
-
 
     # 총알 생성
     gunshots(x_pos, y_pos, bullet, frame)
