@@ -29,7 +29,9 @@ BONUS_SCORE = 30
 
 item_list = []
 last_item_score = 0
-colide_check = False
+SCORE = 0
+
+item = False
 
 
 
@@ -54,11 +56,11 @@ background_image = pygame.transform.scale(background_image, (900, 950)) # 크기
 item_red_image = pygame.image.load("redCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
 item_red_image = pygame.transform.scale(item_red_image, (50,60)) # 크기 조정
 item_green_image = pygame.image.load("greenCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
-item_green_image = pygame.transform.scale(item_green_image, (60,50)) # 크기 조정
+item_green_image = pygame.transform.scale(item_green_image, (50,60)) # 크기 조정
 item_blue_image = pygame.image.load("blueCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
-item_blue_image = pygame.transform.scale(item_blue_image, (60,50)) # 크기 조정
+item_blue_image = pygame.transform.scale(item_blue_image, (50,60)) # 크기 조정
 item_white_image = pygame.image.load("whiteCristal.png").convert_alpha() # 그림 불러오기  빠르게(convert.alpha())
-item_white_image = pygame.transform.scale(item_white_image, (60,50)) # 크기 조정
+item_white_image = pygame.transform.scale(item_white_image, (50,60)) # 크기 조정
 item_img_list = [item_red_image, item_green_image, item_blue_image, item_white_image]
 # ======================================================
 
@@ -216,7 +218,7 @@ while play:
     # ===================================================
 
     
-
+    
     # ===================================================
 
     # 화면에 그리기 시작
@@ -226,25 +228,24 @@ while play:
     #====================================================
 
     # 아이템 생성========================================
-    '''
+
     # list에 값이 있는지 확인
-    try:
-        item_list[0]
-        background.blit(item_random_list[item_list[2]], (item_list[0], item_list[1]))
-        item_xpos += 5
+    if len(item_list) > 0:
+        background.blit(item_random_list[item_list[2]], (item_xpos, item_ypos))
+        item_ypos += 5
+        if item_ypos > 1000:
+            item_list.clear()
         
-        
-        
-    except IndexError:
-        SCORE = 0
-        if colide_check == True or item == True:
-            SCORE = score
-        if score - SCORE == 30:                                                         #    0      1
-            item_list.append(random.randint(75, 825), 0, random.randint(0, 2))          # [x_pos, y_pos, index(item_random_list)]
-            item_ypos = 0
+    else:     # [x_pos, y_pos, {index(item_random_list)} = type]        
+        if score - SCORE >= 1:                                                         
+            item_list.append(random.randint(75, 825))  
+            item_list.append(0)
+            item_list.append(random.randint(0, 2))
             item_xpos = item_list[0]
+            item_ypos = 0
             item_type = item_list[2]
-    '''
+            SCORE = score
+    
 
     # 총알 생성
     gunshots(x_pos, y_pos, bullet, frame)
@@ -355,9 +356,18 @@ while play:
                 pygame.draw.rect(background, ('yellow'), (x_pos, y_pos, 50, 50), 10) # 번쩍 효과
                 coll_frame = frame
                 player_health -= 1
-                background.fill((255, 0, 0))  # 검정색 배경
+                background.fill((255, 0, 0))  # 빨간색 배경
                 if player_health < 1:
                     game_over = True
+
+
+    if len(item_list) > 0:
+        item_rect = pygame.Rect(item_xpos, item_ypos, 50, 60)  # 아이템 사각형 데이터 만들기
+    
+        if player_rect.colliderect(item_rect):
+            pass
+        
+
 
 
 
